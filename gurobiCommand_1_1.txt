@@ -71,3 +71,59 @@ gurobi_cl
  TimeLimit=12000  
  ResultFile=results_gurobi_1_1.txt  
  testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=12000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.05  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=24000  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp

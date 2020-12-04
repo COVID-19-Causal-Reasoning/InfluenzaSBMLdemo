@@ -253,21 +253,21 @@ First for the VN1203 line:
 
 ```{r, message=FALSE, eval=FALSE}
 CarnivalResults_VN1203vsMock <-runCARNIVAL(
-    #solverPath="/opt/ibm/ILOG/CPLEX_Studio129/cplex/bin/x86-64_linux/cplex",
+    solverPath="/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
    # solverPath="/usr/local/bin/cbc",
-   solverPath="/Library/gurobi900/mac64/bin/gurobi_cl",
+   #solverPath="/Library/gurobi900/mac64/bin/gurobi_cl",
     netObj=NetworkCarnival_df,
     measObj=as.data.frame(tf_activities_VN1203vsMock_stat_top50),
     # inputObj = inputObj,
     # DOTfig=TRUE, 
-    dir_name="ResultsCARNIVAL",
+    dir_name="ResultsCARNIVAL_cplex",
     weightObj=t(pathways_VN1203vsMock_zscore_inputCarnival),
     # nodeID = 'gene',
     timelimit = 12000,
-    solver = "gurobi")
-saveRDS(CarnivalResults_VN1203vsMock, file = "ResultsCARNIVAL/VN1203_noinput.rds")
+    solver = "cplex")
+saveRDS(CarnivalResults_VN1203vsMock, file = "ResultsCARNIVAL_cplex/VN1203_noinput.rds")
 OutputCyto(CarnivalResults_VN1203vsMock, 
-  outputFile="ResultsCARNIVAL/VN1203_noinput")
+  outputFile="ResultsCARNIVAL_cplex/VN1203_noinput")
 ```
 
 This is the network after importing CARNIVAL results into cytoscape:
