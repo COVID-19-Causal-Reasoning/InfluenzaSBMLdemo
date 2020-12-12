@@ -1,0 +1,218 @@
+SARS-CoV-2 dataset: Running Progeny and Dorothea
+================
+Alberto Valdeolivas: <alberto.valdeolivas@bioquant.uni-heidelberg.de>;
+Date:
+14/04/2020
+
+### License Info
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+Please check <http://www.gnu.org/licenses/>.
+
+## Introduction
+
+The present script deal with the RNAseq data from the study *"SARS-CoV-2
+launches* *a unique transcriptional signature from in vitro, ex vivo,
+and in vivo systems"*
+
+<https://www.biorxiv.org/content/10.1101/2020.03.24.004655v1>
+
+<https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE147507>
+
+It uses the differential analysis results generated in the previous
+script to run **Progeny** and **Dorothea** for the four cell lines under
+study:
+
+  - Human lung epithelial cells (NHBE): mock treated vs infected with
+    SARS-CoV-2.
+
+  - A549 alveolar cancer cell line: mock treated vs infected with
+    SARS-CoV-2.
+
+  - A549 cell line does not express ACE2, the receptor used by
+    SARS-CoV-2 to penetrate into human cells. Therefore A549 were also
+    transduced with ACE2 and then mock treated or infected with
+    SARS-CoV-2
+
+  - Calu-3 human lung epithelial cancer cell line: mock treated vs
+    infected with SARS-CoV-2.
+
+## Getting Started
+
+We first load the required libraries.
+
+``` r
+library(argparser)
+# 
+p <- arg_parser("Run DOROTHEA and PROGENy on differential expression data")
+p <- add_argument(p, "dds_file",  help="Differential expression wald statistic  (VN1203 vs Mock holding timepoint 7h constant) or  (12hr vs 7hr holding VN1203 constant")
+p <- add_argument(p, "norm_counts_file", help="Normalized counts")
+p <- add_argument(p, "--variable", help="Intervention (e.g. VN1203)")
+p <- add_argument(p, "--baseline", help="The thing to be compared against. E.g. Mock")
+p <- add_argument(p, "--constant", help="The things that are held constant for both variable and baseline. For example timepoint (7h) or strain (VN1203")
+p <- add_argument(p, "--organism", help="Which organism: Human or Mouse", default="Human")
+p <- add_argument(p, "--outdir", help="output directory")
+argv <- parse_args(p, c("Dorothea_ICL103_Proteins_VN1203_vs_NS1_24hr.csv", 
+                        "Progeny_ICL103_Proteins_VN1203_vs_Mock_24hr.csv",
+                        "--variable", "VN1203", 
+                        "--baseline", "NS1", 
+                        "--constant", "24hr",
+                        "--outdir", "IntermediateFiles"))
+
+library(devtools)
+# install_github("saezlab/progeny")
+# install_github("saezlab/dorothea")
+library(progeny)
+library(dorothea)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(pheatmap)
+```
+
+We also read the differential expression results and normalised counts
+from the previous script.
+
+``` r
+## Differential expression table and Normalized counts
+dds <- as.matrix(read.csv(argv$dds_file))
+norm_counts <-  as.matrix(read.csv(argv$norm_counts_file))
+```
+
+## Pathway activity with Progeny
+
+We first estimate the pathway activity using the **Progeny** package.
+
+### ICL103 mock treated vs infected with VN1203
+
+We first compute **Progeny** scores per every sample (with the
+replicates) using the normalised counts. We display the results in a
+Heatmap.
+
+We can see that the different replicates cluster together and clear
+different activity patterns between the infected and the mock treated
+NHBE lines. To evaluate the significance and sign of these pathway
+activities, we can run again **Progeny** using the statistic from the
+differential express analysis.
+
+``` r
+dds_df <- as.data.frame(dds) %>% 
+    rownames_to_column(var = "GeneID") %>% 
+    dplyr::select(GeneID, stat) %>% 
+    dplyr::filter(!is.na(stat)) %>% 
+    column_to_rownames(var = "GeneID") 
+
+
+## I also need to run progeny in such a way to have values between 1 and -1 to
+## use as CARNIVAL input
+pathways_activity_score_inputCarnival <- 
+  t(progeny(as.matrix(dds_df), 
+    scale=TRUE, organism=argv$organism, top = 100, perm = 10000, z_scores = FALSE))
+colnames(pathways_activity_score_inputCarnival) <- "Activity"
+```
+
+## Transcription Factor activity with Dorothea and Viper
+
+Now, we estimate the transcription factor (TF) activity using the
+**dorothea** package. We select Dorothea interactions with confidence
+level A,B and C.
+
+``` r
+## We load Dorothea Regulons
+data(dorothea_hs, package = "dorothea")
+regulons <- dorothea_hs %>%
+  dplyr::filter(confidence %in% c("A", "B","C"))
+```
+
+It is to note that for **Dorothea**, we proceed the other way around
+than for **Progeny**. We have many TFs so, we cannot visualize all of
+them in the same heatmap. That is why, we first compute the TF activity
+using the statistcs from the differential expression analysis. This will
+allows us to select the TFs whose activity varies the most between the
+mock treated and infected samples.
+
+### NHBE mock treated vs infected with SARS-CoV-2
+
+We first run Viper using the statistic from the different expression
+analysis.
+
+``` r
+dds_stat <-  as.data.frame(dds) %>% 
+    rownames_to_column(var = "GeneID") %>% 
+    dplyr::select(GeneID, stat) %>% 
+    dplyr::filter(!is.na(stat)) %>% 
+    column_to_rownames(var = "GeneID") %>%
+    as.matrix()
+
+tf_activities_stat <- 
+    dorothea::run_viper(as.matrix(dds_stat), regulons,
+    options =  list(minsize = 5, eset.filter = FALSE, 
+    cores = 1, verbose = FALSE, nes = TRUE))
+```
+
+We now display the top 25 normalized enrichment scores (NES) for the TF
+in a bar plot.
+
+``` r
+tf_activities_top25 <- tf_activities_stat %>%
+    as.data.frame() %>% 
+    rownames_to_column(var = "GeneID") %>%
+    dplyr::rename(NES = "stat") %>%
+    dplyr::top_n(25, wt = abs(NES)) %>%
+    dplyr::arrange(NES) %>% 
+    dplyr::mutate(GeneID = factor(GeneID))
+```
+
+We now compute TFs activities per every sample (with the replicates)
+using the normalised counts. We display the results of the previous 25
+TFs in a Heatmap.
+
+``` r
+tf_activities_counts <- 
+    dorothea::run_viper(norm_counts, regulons,
+    options =  list(minsize = 5, eset.filter = FALSE, 
+    cores = 1, verbose = FALSE, method = c("scale")))
+
+tf_activities_counts_filter <- tf_activities_counts %>% 
+    as.data.frame() %>% 
+    rownames_to_column(var = "GeneID") %>%
+    dplyr::filter(GeneID %in% tf_activities_top25$GeneID) %>%
+    column_to_rownames(var = "GeneID") %>%
+    as.matrix()
+
+tf_activities <- as.vector(tf_activities_counts_filter)
+
+paletteLength <- 100
+myColor <- 
+    colorRampPalette(c("darkblue", "whitesmoke","indianred"))(paletteLength)
+
+dorotheaBreaks <- c(seq(min(tf_activities), 0, 
+    length.out=ceiling(paletteLength/2) + 1),
+    seq(max(tf_activities)/paletteLength, 
+    max(tf_activities), 
+    length.out=floor(paletteLength/2)))
+```
+
+\`\`
+
+### Saving Results
+
+``` r
+saveRDS(pathways_activity_score_inputCarnival, 
+    file = paste0(argv$outdir,"/pathways_", argv$variable, "vs", argv$baseline, "_for_", argv$control, "_inputCarnival.rds"))
+saveRDS(regulons, 
+    file = paste0(argv$outdir, "/dorothea_regulons.rds"))
+
+saveRDS(tf_activities_stat, 
+    file = paste0(argv$outdir,"/pathways_", argv$variable, "vs", argv$baseline, "_for_", argv$control, "_tf_activities_stat_inputCarnival.rds"))
+```
