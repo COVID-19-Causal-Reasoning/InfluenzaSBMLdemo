@@ -19,12 +19,13 @@ p <- add_argument(p, "--constant", help="The things that are held constant for b
 p <- add_argument(p, "--outdir", help="output directory")
 p <- add_argument(p, "--timelimit", help="Number of seconds before timeout. Default 1200", default=1200)
 p <- add_argument(p, "--mipgap", help="MIP Gap. default: 3%", default=0.03)
+p <- add_argument(p, "--threads", help="number of threads", default=8)
 p <- add_argument(p, "--solver", "cplex gurobi lpsolve or cbc", default="cplex")
 p <- add_argument(p, "--solver_path", "location of solver binary", default="/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex")
 argv <- parse_args(p) #, c( "IntermediateFiles/VN1203vsMock_for_24h_pathways_activity_score_inputCarnival.csv",
                       #  "IntermediateFiles/VN1203vsMock_for_24h_tf_activities_stat_inputCarnival.csv",
                       #  "--variable", "VN1203", 
-                      #  "--baseline", "Mock", 
+                      #  "--perturbation_file", "kegg_influenza_ns1.txt",
                       #  "--constant", "24hr",
                       #  "--timelimit", "150",
                       #  "--mipgap", "0.40",
@@ -151,9 +152,10 @@ write.csv(colnames(tf_activities_stat_top50),
 ## ------------------------------------------------------------------------------------------------------------------
 if ( argv$perturbation_file == "NoInput"){
   HostVirus_perturbation = NULL
+  NetworkCarnivalHostVirus_df <- NetworkCarnival_df
 } else {
  
-  perturbation <- read.csv(argv$perturbation_file)
+  perturbation <- read.csv(argv$perturbation_file, sep="\t")
 
   NetworkCarnivalHostVirus_df <- 
     bind_rows(NetworkCarnival_df, perturbation) %>% 
@@ -175,10 +177,27 @@ if ( argv$perturbation_file == "NoInput"){
   
 
 
+## ---- message=FALSE, eval=TRUE-------------------------------------------------------------------------------------
+CarnivalResults <-runCARNIVAL(
+    solverPath=argv$solver_path,
+      #"/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
+   # solverPath="/usr/local/bin/cbc",
+   #solverPath="/Library/gurobi900/mac64/bin/gurobi_cl",
+    netObj= NetworkCarnivalHostVirus_df,
+    measObj=as.data.frame(tf_activities_stat_top50),
+    inputObj = HostVirus_perturbation,
+    mipGAP = argv$mipgap,
+    threads = argv$threads,
+    # DOTfig=TRUE, 
+    dir_name=argv$outdir,
+    weightObj=t(pathways_activity_score_inputCarnival),
+    # nodeID = 'gene',
+    timelimit = argv$timelimit,
+    solver = argv$solver)
 
 
 ## ------------------------------------------------------------------------------------------------------------------
-if (is.null(perturbation_file)) {
+if (argv$perturbation_file == "NoInput") {
   saveRDS(CarnivalResults, file = paste0(argv$outdir, "/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_noPerturbation.rds"))
   OutputCyto(CarnivalResults, 
   outputFile= paste0(argv$outdir, "/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_noPerturbation"))

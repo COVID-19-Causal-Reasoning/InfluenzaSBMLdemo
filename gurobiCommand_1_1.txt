@@ -247,3 +247,11 @@ gurobi_cl
  TimeLimit=1200  
  ResultFile=results_gurobi_1_1.txt  
  testFile_1_1.lp
+gurobi_cl  
+ MIPGap=0.4  
+ PoolGap=0.0001  
+ PoolSearchMode=2  
+ PoolSolutions= 100  
+ TimeLimit=150  
+ ResultFile=results_gurobi_1_1.txt  
+ testFile_1_1.lp
