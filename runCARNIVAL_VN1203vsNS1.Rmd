@@ -56,35 +56,6 @@ We first load the required libraries.
 # install_github("saezlab/progeny")
 # install_github("saezlab/dorothea")
 #install_github('COVID-19-Causal-Reasoning/CARNIVAL', ref="add_gurobi", force=TRUE)
-library(argparser)
-library(readr)
-# 
-p <- arg_parser("Run CARNIVAL on DOROTHEA and PROGENy output")
-p <- add_argument(p, "pathway_activities_file",  help="Pathway activities  (from Progeny)")
-p <- add_argument(p, "tf_activities_file", help="Transcription Factor Activities (From Dorothea)")
-p <- add_argument(p, "--perturbation_file", help="Perturbation File", default="NoInput")
-p <- add_argument(p, "--variable", help="Intervention (e.g. VN1203)")
-p <- add_argument(p, "--baseline", help="The thing to be compared against. E.g. Mock")
-p <- add_argument(p, "--constant", help="The things that are held constant for both variable and baseline. For example timepoint (7h) or strain (VN1203")
-p <- add_argument(p, "--outdir", help="output directory")
-p <- add_argument(p, "--timelimit", help="Number of seconds before timeout. Default 1200", default=1200)
-p <- add_argument(p, "--solver", "cplex gurobi lpsolve or cbc", default="cplex")
-p <- add_argument(p, "--solver_path", "location of solver binary", default="/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex")
-argv <- parse_args(p, c( "IntermediateFiles/VN1203vsMock_for_24h_pathways_activity_score_inputCarnival.csv",
-                        "IntermediateFiles/VN1203vsMock_for_24h_tf_activities_stat_inputCarnival.csv",
-                        "--variable", "VN1203", 
-                        "--baseline", "Mock", 
-                        "--constant", "24hr",
-                        "--outdir", "ResultsCARNIVAL_VN1203vsMock_for_24hr"))
-
-if ( argv$perturbation_file == "NoInput"){
-  perturbation_file = NULL
-} else {
-  perturbation_file = argv$perturbation_file
-}
-
-Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
-Sys.setenv(CPLEX_STUDIO_DIR1210 = '/Applications/CPLEX_Studio_Community129' )
 carnival_dir <-"~/Projects/CausalInference/Pathogenesis/OmniPath/CARNIVAL/R"
 for(filename in list.files(carnival_dir)){
   source(paste( carnival_dir, filename, sep="/"))}
@@ -187,10 +158,28 @@ AllNodesNetwork <- unique(c(NetworkCarnival_df$from, NetworkCarnival_df$to))
 We also read pathway and TFs activity scores from the previous script. 
 
 ```{r}
-pathways_activity_score_inputCarnival <- as.matrix(read.csv(argv$pathway_activities_file, row.names=1))
-tf_activities_stat <- as.matrix(read.csv(argv$tf_activities_file, row.names=1))
+pathways_VN1203vsNS1_zscore_inputCarnival <- readRDS(file = 
+    "IntermediateFiles/pathways_VN1203vsNS1_zscore_inputCarnival.rds")
+tf_activities_VN1203vsNS1_stat <- 
+    readRDS(file = "IntermediateFiles/tf_activities_VN1203vsNS1_stat.rds")
 ```
 
+```{r}
+pathways_A549vsCOV2_zscore_inputCarnival <- readRDS(file = 
+    "IntermediateFiles/pathways_A549vsCOV2_zscore_inputCarnival.rds")
+tf_activities_A549vsCOV2_stat <- 
+    readRDS(file = "IntermediateFiles/tf_activities_A549vsCOV2_stat.rds")
+
+pathways_A549ACE2vsCOV2_zscore_inputCarnival <- readRDS(file = 
+    "IntermediateFiles/pathways_A549ACE2vsCOV2_zscore_inputCarnival.rds")
+tf_activities_A549ACE2vsCOV2_stat <- 
+    readRDS(file = "IntermediateFiles/tf_activities_A549ACE2vsCOV2_stat.rds")
+
+pathways_CALU3vsCOV2_zscore_inputCarnival <- readRDS(file = 
+    "IntermediateFiles/pathways_CALU3vsCOV2_zscore_inputCarnival.rds")
+tf_activities_CALU3vsCOV2_stat <- 
+    readRDS(file = "IntermediateFiles/tf_activities_CALU3vsCOV2_stat.rds")
+```
 
 ## Running CARNIVAL
 
@@ -204,7 +193,7 @@ the top 50 most active/inactive TFs present in our prior knowledge network.
 
 ```{r, eval=TRUE, echo=TRUE}
 ### VN1203 vs Mock
-tf_activities_stat_top50 <- tf_activities_stat %>% 
+tf_activities_VN1203vsMock_at_7h_stat_top50 <- tf_activities_VN1203vsMock_stat %>% 
   as.data.frame() %>% 
   rownames_to_column(var = "GeneID") %>%
   dplyr::filter(GeneID %in% AllNodesNetwork) %>%
@@ -212,12 +201,64 @@ tf_activities_stat_top50 <- tf_activities_stat %>%
   dplyr::top_n(50, wt = abs(stat)) %>%
   column_to_rownames(var = "GeneID") %>%
   t()
-write.csv(colnames(tf_activities_stat_top50), 
-   paste0(argv$outdir, "/Top50_tf_activities_", argv$variable, "vs", argv$baseline, "_for_", argv$constant))
+saveRDS(colnames(tf_activities_VN1203vsMock_stat_top50), 
+  file = "IntermediateFiles/Top50_tf_activities_VN1203vsMock.rds")
 
 
 ```
 
+```{r}
+### VN1203 vs NS1
+tf_activities_VN1203vsNS1_stat_top50 <- tf_activities_VN1203vsNS1_stat %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "GeneID") %>%
+  dplyr::filter(GeneID %in% AllNodesNetwork) %>%
+  dplyr::arrange(desc(abs(stat))) %>%
+  dplyr::top_n(50, wt = abs(stat)) %>%
+  column_to_rownames(var = "GeneID") %>%
+  t()
+saveRDS(colnames(tf_activities_VN1203vsMock_stat_top50), 
+  file = "IntermediateFiles/Top50_tf_activities_VN1203vsNS1.rds")
+
+```
+
+```{r}
+
+tf_activities_A549vsCOV2_stat_top50 <- tf_activities_A549vsCOV2_stat %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "GeneID") %>%
+  dplyr::filter(GeneID %in% AllNodesNetwork) %>%
+  dplyr::arrange(desc(abs(stat))) %>%
+  dplyr::top_n(50, wt = abs(stat)) %>%
+  column_to_rownames(var = "GeneID") %>%
+  t()
+saveRDS(colnames(tf_activities_A549vsCOV2_stat_top50), 
+  file = "IntermediateFiles/Top50_tf_activities_A549vsCOV2.rds")
+
+### A549 transfected with ACE2
+tf_activities_A549ACE2vsCOV2_stat_top50 <- tf_activities_A549ACE2vsCOV2_stat %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "GeneID") %>%
+  dplyr::filter(GeneID %in% AllNodesNetwork) %>%
+  dplyr::arrange(desc(abs(stat))) %>%
+  dplyr::top_n(50, wt = abs(stat)) %>%
+  column_to_rownames(var = "GeneID") %>%
+  t()
+saveRDS(colnames(tf_activities_A549ACE2vsCOV2_stat_top50), 
+  file = "IntermediateFiles/Top50_tf_activities_A549ACE2vsCOV2.rds")
+
+### CALU-3
+tf_activities_CALU3vsCOV2_stat_top50 <- tf_activities_CALU3vsCOV2_stat %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "GeneID") %>%
+  dplyr::filter(GeneID %in% AllNodesNetwork) %>%
+  dplyr::arrange(desc(abs(stat))) %>%
+  dplyr::top_n(50, wt = abs(stat)) %>%
+  column_to_rownames(var = "GeneID") %>%
+  t()
+saveRDS(colnames(tf_activities_CALU3vsCOV2_stat_top50), 
+  file = "IntermediateFiles/Top50_tf_activities_CALU3vsCOV2.rds")
+```
 
 ### CARNIVAL without perturbations file
 
@@ -226,22 +267,20 @@ write.csv(colnames(tf_activities_stat_top50),
 First for the VN1203 line:
 
 ```{r, message=FALSE, eval=FALSE}
-CarnivalResults <-runCARNIVAL(
-    solverPath=argv$solver_path,
-      #"/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
+CarnivalResults_VN1203vsNS1 <-runCARNIVAL(
+    solverPath="/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
    # solverPath="/usr/local/bin/cbc",
    #solverPath="/Library/gurobi900/mac64/bin/gurobi_cl",
     netObj=NetworkCarnival_df,
-    measObj=as.data.frame(tf_activities_stat_top50),
-    inputObj = argv$perturbation_file,
+    measObj=as.data.frame(tf_activities_VN1203vsNS1_stat_top50),
+    # inputObj = inputObj,
     # DOTfig=TRUE, 
-    dir_name=argv$outdir,
-    weightObj=t(pathways_activity_score_inputCarnival),
+    dir_name="ResultsCARNIVAL_cplex",
+    weightObj=t(pathways_VN1203vsMock_zscore_inputCarnival),
     # nodeID = 'gene',
-    timelimit = argv$timelimit,
-    solver = argv$solver)
-if 
-saveRDS(CarnivalResults, file = paste0(argv$outdir, "/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_"))
+    timelimit = 12000,
+    solver = "cplex")
+saveRDS(CarnivalResults_VN1203vsMock, file = "ResultsCARNIVAL_VN1203vsNS1/VN1203vsNS1_noinput.rds")
 OutputCyto(CarnivalResults_VN1203vsMock, 
   outputFile="ResultsCARNIVAL_VN1203vsNS1/VN1203vsNS1_noinput")
 ```
@@ -266,12 +305,12 @@ CarnivalResults_VN1203vsNS1_at_7h_noinput <-runCARNIVAL(
     dir_name="ResultsCARNIVAL_VN1203vsNS1",
     weightObj=t(pathways_VN1203vsNS1_zscore_inputCarnival),
     # nodeID = 'gene',
-    timelimit = 20,
+    timelimit = 1200,
     solver = "cplex")
 ```
 
 ```{r}
-CarnivalResults_VN1203vsNS1_at_7h_noinput <- CarnivalResults_VN1203vsNS1_noinput
+CarnivalResults_VN1203vsNS1_at_7h_noinput <- CarnivalResults_VN1203vsNS1d_noinput
 saveRDS(CarnivalResults_VN1203vsNS1_at_7h_noinput,
   file = "ResultsCARNIVAL_VN1203vsNS1/VN1203vsNS1_at_7h_noinput.rds")
 OutputCyto(CarnivalResults_VN1203vsNS1_at_7h_noinput, 

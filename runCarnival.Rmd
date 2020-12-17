@@ -80,11 +80,7 @@ argv <- parse_args(p) #, c( "IntermediateFiles/VN1203vsMock_for_24h_pathways_act
                       #  "--mipgap", "0.40",
                       #  "--outdir", "ResultsCARNIVAL_VN1203vsMock_for_24hr"))
 
-if ( argv$perturbation_file == "NoInput"){
-  perturbation_file = NULL
-} else {
-  perturbation_file = argv$perturbation_file
-}
+
 
 Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
 Sys.setenv(CPLEX_STUDIO_DIR1210 = '/Applications/CPLEX_Studio_Community129' )
@@ -222,13 +218,40 @@ write.csv(colnames(tf_activities_stat_top50),
 ```
 
 
-### CARNIVAL without perturbations file
+### CARNIVAL with perturbations file
 
+
+```{r}
+if ( argv$perturbation_file == "NoInput"){
+  HostVirus_perturbation = NULL
+} else {
+ 
+  perturbation <- read.csv(argv$perturbation_file)
+
+  NetworkCarnivalHostVirus_df <- 
+    bind_rows(NetworkCarnival_df, perturbation) %>% 
+    dplyr::distinct()
+
+## We have to be careful with the gene names with a "-". CPLEX gets crazy. 
+  NetworkCarnivalHostVirus_df$from <- 
+    gsub("-","_", NetworkCarnivalHostVirus_df$from)
+  NetworkCarnivalHostVirus_df$to <- 
+   gsub("-","_", NetworkCarnivalHostVirus_df$to)
+
+  Virusproteins <- unique(perturbation$from)
+  Virusproteins <-  gsub("-","_", Virusproteins)
+  HostVirus_perturbation <- 
+   data.frame(Virusproteins = rep(1,length(Virusproteins)))
+  rownames(HostVirus_perturbation) <- Virusproteins
+  HostVirus_perturbation <- as.data.frame(t(as.matrix(HostVirus_perturbation)))
+} 
+  
+```
 #### VN1203 cell line
 
 First for the VN1203 line:
 
-```{r, message=FALSE, eval=TRUE}
+```{r, message=FALSE, eval=TRUEd}
 CarnivalResults <-runCARNIVAL(
     solverPath=argv$solver_path,
       #"/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
@@ -236,7 +259,7 @@ CarnivalResults <-runCARNIVAL(
    #solverPath="/Library/gurobi900/mac64/bin/gurobi_cl",
     netObj=NetworkCarnival_df,
     measObj=as.data.frame(tf_activities_stat_top50),
-    inputObj = perturbation_file,
+    inputObj = HostVirus_perturbation,
     mipGAP = argv$mipgap,
     # DOTfig=TRUE, 
     dir_name=argv$outdir,
