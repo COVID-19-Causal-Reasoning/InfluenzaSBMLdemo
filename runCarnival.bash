@@ -4,7 +4,7 @@ EXPERIMENT=ICL103
 OMICS=Proteins
 VARIABLE=VN1203
 STRAIN="VN1203 NS1 627E Mock"
-BASELINE=Mock
+BASELINE=NS1
 TIME="0h 3h 7h 12h 18h 24h"
 PERTURBATION=kegg_influenza_ns1.txt
 
@@ -24,7 +24,7 @@ PERTURBATION=kegg_influenza_ns1.txt
 for CONSTANT in $TIME
 do
     Rscript runCarnival.R  --variable $VARIABLE \
-	    --baseline NS1 \
+	    --baseline $BASELINE \
 	    --constant $CONSTANT \
 	    --threads 8 \
 	    --outdir  ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r \
