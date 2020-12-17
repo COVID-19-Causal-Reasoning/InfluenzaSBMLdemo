@@ -4,6 +4,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## ---- message=FALSE------------------------------------------------------------------------------------------------------------------------------------------
 library(argparser)
+library(readr)
 # 
 p <- arg_parser("Run DOROTHEA and PROGENy on differential expression data")
 p <- add_argument(p, "dds_file",  help="Differential expression wald statistic  (VN1203 vs Mock holding timepoint 7h constant) or  (12hr vs 7hr holding VN1203 constant")
@@ -13,12 +14,12 @@ p <- add_argument(p, "--baseline", help="The thing to be compared against. E.g. 
 p <- add_argument(p, "--constant", help="The things that are held constant for both variable and baseline. For example timepoint (7h) or strain (VN1203")
 p <- add_argument(p, "--organism", help="Which organism: Human or Mouse", default="Human")
 p <- add_argument(p, "--outdir", help="output directory")
-argv <- parse_args(p, c("Dorothea_ICL103_Proteins_VN1203_vs_NS1_24hr.csv", 
-                        "Progeny_ICL103_Proteins_VN1203_vs_Mock_24hr.csv",
-                        "--variable", "VN1203", 
-                        "--baseline", "NS1", 
-                        "--constant", "24hr",
-                        "--outdir", "IntermediateFiles"))
+argv <- parse_args(p) #c("Dorothea_ICL103_Proteins_VN1203_vs_NS1_24hr.csv", 
+                      #  "Progeny_ICL103_Proteins_VN1203_vs_Mock_24hr.csv",
+                      #  "--variable", "VN1203", 
+                      #  "--baseline", "NS1", 
+                      #  "--constant", "24hr",
+                      #  "--outdir", "IntermediateFiles"))
 
 library(devtools)
 # install_github("saezlab/progeny")
@@ -112,10 +113,10 @@ dorotheaBreaks <- c(seq(min(tf_activities), 0,
 
 
 ## ------------------------------------------------------------------------------------------------------------------------------------------------------------
-saveRDS(pathways_activity_score_inputCarnival, 
-    file = paste0(argv$outdir,"/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_pathways_activity_score_inputCarnival.rds"))
-saveRDS(regulons, 
-    file = paste0(argv$outdir, "/dorothea_regulons.rds"))
-saveRDS(tf_activities_stat, 
-    file = paste0(argv$outdir,"/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_tf_activities_stat_inputCarnival.rds"))
+write.csv(as.data.frame(pathways_activity_score_inputCarnival), 
+     paste0(argv$outdir,"/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_pathways_activity_score_inputCarnival.csv"))
+write.csv(as.data.frame(regulons), 
+    paste0(argv$outdir, "/dorothea_regulons.csv"))
+write.csv(as.data.frame(tf_activities_stat), 
+    paste0(argv$outdir,"/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_tf_activities_stat_inputCarnival.csv"))
 
