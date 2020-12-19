@@ -15,9 +15,9 @@ do
     for CONSTANT in $TIME
     do
 	INPUTDIR=Results/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r
-	git mv $INPUTDIR/network_solution.dot Results/Dotfiles/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.dot
-	git mv $INPUTDIR/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.pdf Results/Networks/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.pdf
-	git mv $INPUTDIR/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.xlsx Results/Networks/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.xlsx
+	#git mv $INPUTDIR/network_solution.dot Results/Dotfiles/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.dot
+	#git mv $INPUTDIR/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.pdf Results/Networks/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.pdf
+	git mv Results/Networks/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.xlsx  Results/ExcelFiles/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}.xlsx
     done
 done
 git status
