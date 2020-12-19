@@ -45,7 +45,7 @@ if __name__ == '__main__':
     inputdir = Path(argv.inputdir)
     outputdir = Path(argv.outputdir)
     gv = pg.AGraph(str(inputdir/'network_solution.dot'))
-    activity = {'mistyrose':'DownRegulated', 'lavender':'UpRegulated'}
+    activity = {'mistyrose':'DownRegulated', 'lavender':'UpRegulated', '':'Unknown'}
     nodetype = {'doublecircle':'FootprintObserved',
                 'invhouse':'Perturbation',
                 '':'InferredNode'}

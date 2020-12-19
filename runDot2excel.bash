@@ -34,7 +34,8 @@ do
     do
 	INPUTDIR=ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r
 	OUTPUTDIR=ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r
-
+	echo $INPUTDIR
+	
 	if [ -r ${INPUTDIR}/network_solution.dot ]
 	   then
 	       python dot2excel.py \
