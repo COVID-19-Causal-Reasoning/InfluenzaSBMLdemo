@@ -1,0 +1,16 @@
+#!/bin/bash
+
+VARIABLE=VN1203
+STRAIN="Mock NS1"
+BASELINE=NS1
+TIME="0h 3h 7h 12h 18h 24h"
+
+for BASELINE in $STRAIN
+do
+    for CONSTANT in $TIME
+    do
+	INPUTDIR=ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r
+	OUTPUTDIR=Results/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r
+	git mv $INPUTDIR $OUTPUTDIR
+    done
+done
