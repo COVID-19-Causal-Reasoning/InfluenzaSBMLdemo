@@ -1,0 +1,8 @@
+digraph {
+
+NS1->IRF3 [penwidth=1, color=red, arrowhead="tee"]
+NS1 [style=filled, color=black, fillcolor=lavender, shape=invhouse];
+IRF3 [style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
+
+
+}

@@ -1,0 +1,4 @@
+Node	ZeroAct	UpAct	DownAct	AvgAct	NodeType
+SREBF2	0	0	100	-100	T
+CASP1	0	0	100	-100	I
+NS1	0	100	0	100	S
