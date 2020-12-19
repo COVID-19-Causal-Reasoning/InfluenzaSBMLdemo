@@ -32,15 +32,15 @@ if __name__ == '__main__':
     parser.add_argument( "--inputdir", help="input directory")
     parser.add_argument( "--outputdir", help="output directory")
     parser.add_argument("--omnipathdb",help="Omnipath file")
-    argv = parser.parse_args(["--inputdir", "ResultsCARNIVAL_VN1203vsMock_for_24hr",
+    test_arguments = ["--inputdir", "ResultsCARNIVAL_VN1203vsMock_for_24hr",
                    "--variable", "VN1203", 
                     "--baseline", "Mock",
                    "--constant", "24h",
                     "--omnipathdb", "OmnipathSignedDirectedInteractions.csv",
                    "--outputdir", "ResultsCARNIVAL_VN1203vsMock_for_24hr"])
+    argv = parser.parse_args()
 
 
-    #expdir = Path(f'ResultsCARNIVAL_{argv.variable}vs{argv.baseline}_for_{argv.constant}r')
     inputdir = Path(argv.inputdir)
     outputdir = Path(argv.outputdir)
     gv = pg.AGraph(str(expdir/'network_solution.dot'))
