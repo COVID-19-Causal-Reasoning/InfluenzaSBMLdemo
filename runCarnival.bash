@@ -23,6 +23,7 @@ PERTURBATION=kegg_influenza_ns1.txt
 
 for CONSTANT in $TIME
 do
+    mkdir -p ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r 
     Rscript runCarnival.R  --variable $VARIABLE \
 	    --baseline $BASELINE \
 	    --constant $CONSTANT \
