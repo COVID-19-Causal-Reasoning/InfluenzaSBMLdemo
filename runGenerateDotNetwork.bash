@@ -4,9 +4,9 @@ EXPERIMENT=ICL103
 OMICS=Proteins
 VARIABLE=VN1203
 STRAIN="VN1203 NS1 627E Mock"
-BASELINE=NS1
+BASELINE=Mock
 TIME="0h 3h 7h 12h 18h 24h"
-PERTURBATION=kegg_influenza_ns1.txt
+PERTURBATION=kegg_influenza_ns1
 
 
 # for CONSTANT in $TIME
@@ -23,10 +23,11 @@ PERTURBATION=kegg_influenza_ns1.txt
 # done
 
 
-for BASELINE in Mock NS1 
+for BASELINE in Mock 
 do
     for CONSTANT in $TIME
     do
-	dot -Tpdf  ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r/network_solution.dot -o ResultsCARNIVAL_${VARIABLE}vs${BASELINE}_for_${CONSTANT}r/${VARIABLE}vs${BASELINE}_for_${CONSTANT}r.pdf
+	OUTDIR=ResultsCARNIVAL${VARIABLE}vs${BASELINE}_for_${CONSTANT}r_${PERTURBATION}
+	dot -Tpdf  ${OUTDIR}/network_solution.dot -o ${OUTDIR}/${OUTDIR}.pdf
     done
 done

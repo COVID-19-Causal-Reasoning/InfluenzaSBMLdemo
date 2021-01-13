@@ -83,7 +83,8 @@ argv <- parse_args(p) #, c( "IntermediateFiles/VN1203vsMock_for_24h_pathways_act
 
 
 
-Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
+#Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
+Sys.setenv(CPLEX_STUDIO_KEY='api_cos_25b6218d-8d6c-42e4-9f6f-5c07c730f281')
 Sys.setenv(CPLEX_STUDIO_DIR1210 = '/Applications/CPLEX_Studio_Community129' )
 carnival_dir <-"~/Projects/CausalInference/Pathogenesis/OmniPath/CARNIVAL/R"
 for(filename in list.files(carnival_dir)){

@@ -1,0 +1,18 @@
+digraph {
+up1->down1 [penwidth=1, color=red, arrowhead="tee"];
+down4->up2 [penwidth=1, color=black, arrowhead="tee"];
+up3 -> up4 [penwidth=1, color=black, arrowhead="vee"];
+down2->down3[penwidth=1, color=red, arrowhead="vee"];
+Viral_protein [label="", style=filled, color=black, fillcolor=lavender, shape=invhouse];
+Observed_TF [label="", style=filled,  shape=doublecircle];
+Inferred_TF [label="", style=filled];
+up1 [label="upregulated", style=filled, fillcolor=lavender];
+up2 [label="upregulated", style=filled, fillcolor=lavender];
+up3 [label="upregulated", style=filled, fillcolor=lavender];
+up4 [label="upregulated", style=filled, fillcolor=lavender];
+down1 [label="downregulated", style=filled, fillcolor=mistyrose];
+down2 [label="downregulated", style=filled, fillcolor=mistyrose];
+down3 [label="downregulated", style=filled, fillcolor=mistyrose];
+down4 [label="downregulated", style=filled, fillcolor=mistyrose];
+
+}

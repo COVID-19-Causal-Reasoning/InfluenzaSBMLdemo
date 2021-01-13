@@ -1,8 +1,8 @@
-## ----setup, include=FALSE, warning=FALSE---------------------------------------------------------------------------
+## ----setup, include=FALSE, warning=FALSE------------------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
 
-## ------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------
 # install_github("saezlab/progeny")
 # install_github("saezlab/dorothea")
 #install_github('COVID-19-Causal-Reasoning/CARNIVAL', ref="add_gurobi", force=TRUE)
@@ -33,7 +33,8 @@ argv <- parse_args(p) #, c( "IntermediateFiles/VN1203vsMock_for_24h_pathways_act
 
 
 
-Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
+#Sys.setenv(CPLEX_STUDIO_KEY='api_cos_0c913dc4-503c-4334-9b4e-ae4c7d13158b')
+Sys.setenv(CPLEX_STUDIO_KEY='api_cos_25b6218d-8d6c-42e4-9f6f-5c07c730f281')
 Sys.setenv(CPLEX_STUDIO_DIR1210 = '/Applications/CPLEX_Studio_Community129' )
 carnival_dir <-"~/Projects/CausalInference/Pathogenesis/OmniPath/CARNIVAL/R"
 for(filename in list.files(carnival_dir)){
@@ -42,7 +43,7 @@ for(filename in list.files(carnival_dir)){
 #library(CARNIVAL)
 
 
-## ------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------
 library(rlist)
 library(devtools)
 library(tidyverse)
@@ -76,7 +77,7 @@ OutputCyto <- function(CarnivalResults, outputFile) {
 }
 
 
-## ---- message=FALSE------------------------------------------------------------------------------------------------
+## ---- message=FALSE---------------------------------------------------------------------------------------------------------------------------------------
 ## the OmniPath PPI interaction network
 ia_omnipath <- import_Omnipath_Interactions() %>% as_tibble()
 
@@ -128,12 +129,12 @@ NetworkCarnival_df$to <- gsub("-","_", NetworkCarnival_df$to)
 AllNodesNetwork <- unique(c(NetworkCarnival_df$from, NetworkCarnival_df$to))
 
 
-## ------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------
 pathways_activity_score_inputCarnival <- as.matrix(read.csv(argv$pathway_activities_file, row.names=1))
 tf_activities_stat <- as.matrix(read.csv(argv$tf_activities_file, row.names=1))
 
 
-## ---- eval=TRUE, echo=TRUE-----------------------------------------------------------------------------------------
+## ---- eval=TRUE, echo=TRUE--------------------------------------------------------------------------------------------------------------------------------
 ### VN1203 vs Mock
 tf_activities_stat_top50 <- tf_activities_stat %>% 
   as.data.frame() %>% 
@@ -149,7 +150,7 @@ write.csv(colnames(tf_activities_stat_top50),
 
 
 
-## ------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------
 if ( argv$perturbation_file == "NoInput"){
   HostVirus_perturbation = NULL
   NetworkCarnivalHostVirus_df <- NetworkCarnival_df
@@ -177,7 +178,7 @@ if ( argv$perturbation_file == "NoInput"){
   
 
 
-## ---- message=FALSE, eval=TRUE-------------------------------------------------------------------------------------
+## ---- message=FALSE, eval=TRUE----------------------------------------------------------------------------------------------------------------------------
 CarnivalResults <-runCARNIVAL(
     solverPath=argv$solver_path,
       #"/Applications/CPLEX_Studio_Community129/cplex/bin/x86-64_osx/cplex",
@@ -196,7 +197,7 @@ CarnivalResults <-runCARNIVAL(
     solver = argv$solver)
 
 
-## ------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------
 if (argv$perturbation_file == "NoInput") {
   saveRDS(CarnivalResults, file = paste0(argv$outdir, "/", argv$variable, "vs", argv$baseline, "_for_", argv$constant, "_noPerturbation.rds"))
   OutputCyto(CarnivalResults, 
