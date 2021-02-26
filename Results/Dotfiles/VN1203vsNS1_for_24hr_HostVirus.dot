@@ -72,7 +72,7 @@ ZEB2->CDH1 [penwidth=1, color=red, arrowhead="tee"]
 PAX8->WT1 [penwidth=1, color=red, arrowhead="vee"]
 NS1->IRF3 [penwidth=1, color=red, arrowhead="tee"]
 NS1->CASP1 [penwidth=1, color=red, arrowhead="tee"]
-NS1 [style=filled, color=black, fillcolor=lavender, shape=invhouse];
+NS1 [label="", image="low-threat.png", shape=none]
 HNF1A [style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
 HSF1 [style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
 GABPA [style=filled, color=black, fillcolor=lavender, shape=doublecircle];
