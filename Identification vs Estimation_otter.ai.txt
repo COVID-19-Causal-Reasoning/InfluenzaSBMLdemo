@@ -1,41 +1,45 @@
-Why is the predictive power of the model no better than chance?
+Hi folks,
 
+In preparation for our  early morning Monday meeting, I wanted to provide a first stab at our  response to any questions by the committee along the lines of "Why is the predictive power of the model no better than chance?"
 
-I argue that this is exactly what you would expect if, in addition to the model, there are also unmeasured factors that affect the expression of the observed proteins.
+Why the predictive power of the model is no better than chance.
+
+I argue that this is exactly what you would expect if, in addition to the model, there were also unmeasured factors that affect the expression of the observed proteins.
 This should not be surprising.
-The cell is full of molecles that are constantly bumping into each other and affecting the activity of each other.
+The cell is full of molecules that are constantly bumping into and affecting the activity of each other.
 Therefore,  we want to take into account all the known factors that could threaten the validity of the model's predictions, and only then ask "what can still be predicted?"
 
-In other words, before we can estimate a causal effect from data, we must first identify which causal effects can be estimated from data.
-Let me explain with a simple model.
+In other words, before we try to estimate a causal effect from data, we must first identify which causal effects can be estimated from data.
+Let me explain with a simple model:
+
+ 
 We have a virus.
-And as we have described there are measured nodes, and there are unmeasured nodes, and each directed edge represents the causal effect of the upstream protein on the downstream protein.
-But now we have these  dashed bidirected edges in blue. These bidirected edges represent unmeasured common causes, or confounders, of nodes in these network.
-And we know that these unmeasured common causes exist because we have access to the OmniPath Knowledge Graph contains all causal relationships that have been manually curated from the scientific literature.
-And according to that knowledge graph, we know that there's some protein not in the model that regulates D and H.
-And as a result, any estimates of the causal effect of D on H are going to be biased due to that confounder.
-Now, in the potential outcomes framework, which is the main competitor to the Pearl-style causal inference claim that  "All confounders must be observed."
+And as we have described there are measured proteins (double circles), and there are unmeasured proteins (ovals), and each directed edge represents the causal effect of the upstream protein on the downstream protein.
+But now we have these  dashed bidirected edges in blue. These bidirected edges represent unmeasured common causes, or confounders, of proteins in these network.
+And we know that these unmeasured common causes exist because we have access to the OmniPath Knowledge Graph which contains all causal relationships that have been manually curated from the scientific literature.
+And according to that knowledge graph, we know that there's some protein not in the model that regulates D and H, B and H, A and F, and A and E.
+And as a result, any estimates of the causal effect of D on H are going to be biased due to those confounders.  
+What about the other causal effects?  It turns out they are still identifiable according to the do-calculus.
+Now, proponents of the potential outcomes framework, which is the main competitor to Pearl-style causal inference, claim that  "All confounders must be observed."
 If there's a single unmeasured confounder, then potential outcomes people throw up their hands and say "We cannot estimate the causal effect."
 On the other hand, in the Pearl-style causal inference we say, "If the causal effect is identifiable, then it can be estimated from data."
+In fact,  our third paper demonstrated that it is possible to train a latent variable model using only data from observed variables to predict any identifiable causal effect.
 So, to give a sense of how many confounders there can be, lets look at the causal effects of the NS1 protein from the H5N1 virus versus Mock data at 24 hours.
+ 
 There are 77 nodes here, of which 42 are observed.
 We searched the OmniPath KB and asked for each pair of nodes in this model, if there was any common cause.
 Of the  nearly 3000 (2926) pairs of nodes, almost 1/3  (948)  had at least one common cause.
 Now that's just too much to visualize.
-I mean, this causal graph was already too difficult for our domain scientist to interpret because she wasn't familiar with most of the nodes in the network.
+I mean, this causal graph was already too difficult for our domain scientist to interpret because even as a virologist, she wasn't necessarily familiar with many of the proteins in the network.
 After adding 948 bidirected edges, then it becomes unreadable.
-Nonetheless, we then asked which causal effects could be identified even in the presence of these 948 unmeasured confounders?
-So I took a topological sort of the causal model (which linearizes the DAG while preserving order) and ran the 1-Line-ID algorithm to determine when the causal effect of the upstream node on the downstream node  can be estimated from data.
+Nonetheless, we can still ask which causal effects could be identified even in the presence of these 948 unmeasured confounders?
+So I took a topological sort of the causal model (which linearizes the graph while preserving causal direction) and ran the 1-Line-ID algorithm to determine when the causal effect of any upstream protein on any downstream protein  can be estimated from data.
 And it turns out that the causal query was identifiable in 2100 of the queries, and only in 826 was the causal query not identifiable.
-So, this gives us confidence that even though we have 948 confounding edges, representing so many unmeasured Common causes that you can't even visualize it, you can still estimate the causal effect.
+So, this gives us confidence that even though we have 948 confounding edges, representing so many unmeasured common causes that you can't even visualize them, we can still estimate the causal effect.
 Now those causal effects are not as simple as a linear regression.
 Knowledge of these confounders forces you to reweight your data, but that adjustment formula automatically comes out of the  identification algorithm.
 So not only do we know that the causal effect is identifiable, we also know how to estimate it from data.
 
 And once we have an estimand, it is no longer a causal inference problem.
-It now becomes a statistics problem which is something that we leave to our highly qualified statisticians.
-Our contribution is we used domain knowledge to discover 948 common causes that partition all causal queries into two classes: one containing 2100 identifiable causal effects that can be estimated from data given assumptions that were justified from domain knowledge and one containing 826 nonidentifiable causal effects that cannot be estimated from data without additional assumptions.
-Then our domain scientists can say, "I care about these causal effects enough that I am willing to run an experiment to collect enough data to estimate them", or "I already have data that can validate those causal effects", and so forth.
-
-
-
+It now becomes a statistics problem,
+And even though we are not statisticians, we can still help our highly qualified statistician friends estimate a given causal effect by developing an algorithm to compress the model into the simplest possible structure that still enables identification of that effect, thereby vastly reducing the dimensionality of the model and increasing the precision of the estimates.  For the biologist, this means fewer proteins need to be measured and fewer observations of the proteinis that need to be measured.
