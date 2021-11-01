@@ -1,0 +1,14 @@
+digraph {
+up1->down1 [penwidth=1, color=red, arrowhead="tee"];
+down4->up2 [penwidth=1, color=black, arrowhead="tee"];
+up3 -> up4 [penwidth=1, color=black, arrowhead="vee"];
+down2->down3[penwidth=1, color=red, arrowhead="vee"];
+up1 [label="", style=invis, fillcolor=lavender];
+up2 [label="", style=invis, fillcolor=lavender];
+up3 [label="", style=invis, fillcolor=lavender];
+up4 [label="", style=invis, fillcolor=lavender];
+down1 [label="", style=invis, fillcolor=mistyrose];
+down2 [label="", style=invis, fillcolor=mistyrose];
+down3 [label="", style=invis, fillcolor=mistyrose];
+down4 [label="", style=invis, fillcolor=mistyrose];
+}

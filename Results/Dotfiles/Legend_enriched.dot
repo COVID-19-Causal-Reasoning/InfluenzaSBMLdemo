@@ -1,0 +1,5 @@
+digraph {
+Viral_protein [label="", style=filled, color=black, fillcolor=lavender, shape=invhouse];
+Upregulated_TF [label="", style=filled,  shape=doublecircle, fillcolor=lavender];
+Downregulated_TF [label="", style=filled, shape=doublecircle, fillcolor=mistyrose];
+}

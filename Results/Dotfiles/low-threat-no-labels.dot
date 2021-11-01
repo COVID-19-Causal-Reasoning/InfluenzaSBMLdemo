@@ -1,0 +1,24 @@
+digraph {
+NS1 [label="", image="low-threat.png", shape=none]
+EP300 [label="", style=filled,   fillcolor=lavender];
+IRF3 [label="", style=filled, shape=doublecircle, fillcolor=mistyrose];
+CASP1 [label="", style=filled, fillcolor=mistyrose];
+NS1->IRF3 [penwidth=1, color=red, arrowhead="tee"]
+NS1->CASP1 [penwidth=1, color=red, arrowhead="tee"];
+CASP1->CASP3 [penwidth=1, color=red, arrowhead="vee"]
+CASP1->SREBF1 [penwidth=1, color=blue, style=dashed, dir=both]
+IRF3->EP300 [penwidth=1, color=black, arrowhead="tee"]
+EP300->IRF1 [penwidth=1, color=red, arrowhead="tee"]
+EP300->IRF1 [penwidth=1, dir=both, style=dashed, color=blue]
+CASP3->SREBF1 [penwidth=1, color=red, arrowhead="vee"]
+EP300->IL6 [penwidth=1, color=black, arrowhead="vee"]
+EP300->DDX5 [penwidth=1, color=red, arrowhead="tee"]
+IRF3->IRF1 [style=dashed, dir=both, color=blue]
+CASP1->DDX5 [style=dashed, dir=both, color=blue]
+DDX5 [label="", shape=doublecircle, style=filled, fillcolor=mistyrose];
+IL6 [label="", shape=doublecircle, style=filled, fillcolor=lavender];
+IRF1 [label="", style=filled, color=red, fillcolor=mistyrose, shape=doublecircle];
+CASP3 [label="", style=filled, fillcolor=mistyrose];
+SREBF1 [label="", style=filled, shape=doublecircle, fillcolor=mistyrose];
+
+}

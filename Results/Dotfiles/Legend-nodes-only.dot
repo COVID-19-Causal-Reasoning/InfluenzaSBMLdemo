@@ -1,0 +1,5 @@
+digraph {
+up [label="", style=filled,  fillcolor=mistyrose];
+down [label="", style=filled, fillcolor=lavender];
+up->down [style=invis];
+}
